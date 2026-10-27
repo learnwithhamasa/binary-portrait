@@ -1,10 +1,10 @@
-# صورتك بالـ 0 و 1 — Binary Portrait
+# حوّل أي صورة لأصفار ووحايد — Binary Portrait
 
 **جرّبها:** https://learnwithhamasa.github.io/binary-portrait/
 
-حوّل أي صورة إلى أصفار وآحاد كما يراها الكمبيوتر:
+حوّل أي صورة لأصفار ووحايد زي ما الكمبيوتر بيشوفها:
 **1 = أسود · 0 = أبيض · كل خانة = بكسل واحد** (صورة 1-بت).
-مجانية بالكامل، وصورتك لا تُرفع لأي سيرفر — كل المعالجة تتم داخل المتصفح.
+ببلاش خالص، وصورتك مش بتترفع على أي سيرفر — كل حاجة بتحصل جوه المتصفح.
 
 ---
 
@@ -18,4 +18,4 @@ Every digit is an actual pixel (1 = black, 0 = white); nothing is random or deco
 Note: this is a simplified educational encoding (1 bit per pixel). Real grayscale images
 typically use 8 bits per pixel and color images 24 bits.
 
-Made by **حماسة (Hamasa)**.
+Made by **حماصه (Hamasa)**.

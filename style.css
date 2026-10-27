@@ -103,8 +103,39 @@ footer {
 }
 footer a { color: var(--amber); }
 
+footer .site { direction: ltr; unicode-bidi: isolate; font-size: clamp(.68rem, 3.3vw, .9rem); white-space: nowrap; }
+html { -webkit-text-size-adjust: 100%; }
+img, canvas { max-width: 100%; }
+.top > div { min-width: 0; }
+input[type=range] { height: 28px; }
+
+/* Phones */
+@media (max-width: 520px) {
+  .top { padding-top: 18px; gap: 12px; }
+  .logo { width: 48px; height: 48px; border-radius: 11px; }
+  .sub { font-size: .92rem; }
+  .drop { padding: 28px 14px; }
+  .card { padding: 12px; }
+  .btns { grid-template-columns: 1fr; }
+  .btn { padding: 13px; }
+  .seg button { flex-basis: 100%; }
+  .row { gap: 12px 18px; }
+  footer { flex-direction: column; text-align: center; gap: 6px; }
+}
+
+/* Tablets (portrait): single column, but controls and downloads side by side */
+@media (min-width: 600px) and (max-width: 859px) {
+  #work { grid-template-columns: 1fr 1fr; }
+  .preview-card, .zoom-card, .downloads { grid-column: 1 / -1; }
+  .btns { grid-template-columns: 1fr 1fr; }
+  .controls { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  .controls .row { grid-column: 1 / -1; }
+}
+
+/* Tablet landscape / desktop */
 @media (min-width: 860px) {
   #work { grid-template-columns: 1.5fr 1fr; align-items: start; }
   .preview-card { grid-row: span 3; }
   .downloads { grid-column: 1 / -1; }
+  .btns { grid-template-columns: repeat(4, 1fr); }
 }

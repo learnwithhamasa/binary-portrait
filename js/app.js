@@ -83,6 +83,65 @@
     }
   }
 
+  // ---------------------------------------------------------------- watermark
+  /**
+   * Watermark baked into the pixels of the art itself: diagonal rows of logo + "حماصه"
+   * tiled over the whole area (cropping can't remove it) and a solid logo stamp in the middle-bottom.
+   * scale = text height as a fraction of the area's shorter side.
+   */
+  function drawWatermark(ctx, x, y, w, h, scale = 0.05, stamp = true) {
+    const fs = Math.max(9, Math.round(Math.min(w, h) * scale));
+    const R = Math.hypot(w, h) / 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate(-Math.PI / 7);
+    ctx.font = `800 ${fs}px "Cairo", sans-serif`;
+    ctx.direction = "rtl";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    const label = "حماصه";
+    const ls = fs * 1.15;                                   // logo size in each tile
+    const tw = ls + fs * 0.35 + ctx.measureText(label).width + fs * 2.6;
+    const lh = fs * 3.4;
+    ctx.globalAlpha = 0.26;
+    ctx.fillStyle = AMBER;
+    for (let row = 0, yy = -R; yy <= R + lh; yy += lh, row++) {
+      for (let xx = -R - (row % 2) * tw / 2; xx <= R; xx += tw) {
+        ctx.drawImage(logo, xx, yy - ls / 2, ls, ls);
+        ctx.fillText(label, xx + ls + fs * 0.35, yy);
+      }
+    }
+    ctx.restore();
+    if (!stamp) return;
+
+    // Solid stamp: logo + name, centered near the bottom of the art
+    const s = Math.round(Math.min(w, h) * 0.13);
+    ctx.save();
+    ctx.font = `800 ${Math.round(s * 0.42)}px "Cairo", sans-serif`;
+    ctx.direction = "rtl";
+    const nameW = ctx.measureText(label).width;
+    const pw = s + s * 0.25 + nameW + s * 0.45, ph = s + s * 0.3;
+    const px = x + (w - pw) / 2, py = y + h - ph - h * 0.04;
+    ctx.globalAlpha = 0.88;
+    ctx.fillStyle = NAVY;
+    roundRect(ctx, px, py, pw, ph, ph / 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.save();
+    roundRect(ctx, px + s * 0.15, py + s * 0.15, s, s, s * 0.22);
+    ctx.clip();
+    ctx.drawImage(logo, px + s * 0.15, py + s * 0.15, s, s);
+    ctx.restore();
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, px + s * 0.15 + s + s * 0.25, py + ph / 2 + s * 0.03);
+    ctx.restore();
+  }
+
   // ---------------------------------------------------------------- live preview
   function schedule() {
     if (pending || !src) return;
@@ -111,6 +170,7 @@
     cv.height = matrix.rows * 3 * k;
     const ctx = cv.getContext("2d");
     drawGrid(ctx, matrix, 0, 0, k);
+    drawWatermark(ctx, 0, 0, cv.width, cv.height);
     // Outline the zoomed area
     const { c0, r0, zc, zr } = zoomWindow();
     ctx.strokeStyle = AMBER;
@@ -124,7 +184,9 @@
     const cv = $("zoom");
     cv.width = zc * 2 * k;
     cv.height = zr * 3 * k;
-    drawGrid(cv.getContext("2d"), matrix, 0, 0, k, r0, c0, zr, zc);
+    const ctx = cv.getContext("2d");
+    drawGrid(ctx, matrix, 0, 0, k, r0, c0, zr, zc);
+    drawWatermark(ctx, 0, 0, cv.width, cv.height, 0.16, false);
   }
 
   // ---------------------------------------------------------------- loading
@@ -150,7 +212,7 @@
       schedule();
       $("work").scrollIntoView({ behavior: "smooth", block: "start" });
     };
-    img.onerror = () => { URL.revokeObjectURL(url); alert("تعذّر فتح الصورة، جرّب صورة أخرى."); };
+    img.onerror = () => { URL.revokeObjectURL(url); alert("مش عارفين نفتح الصورة دي، جرّب صورة تانية."); };
     img.src = url;
   }
 
@@ -230,6 +292,7 @@
     roundRect(ctx, bx, by, bw, bh, inner);
     ctx.fill();
     drawGrid(ctx, matrix, bx + inner, by + inner, k);
+    drawWatermark(ctx, bx, by, bw, bh);
 
     if (withZoom) {
       const zc = Math.min(20, matrix.cols);
@@ -246,7 +309,7 @@
       ctx.textBaseline = "middle";
       ctx.fillStyle = AMBER;
       ctx.font = `600 ${Math.round(titleSize * 0.5)}px "Cairo", sans-serif`;
-      ctx.fillText("🔍 تكبير: كل رقم هنا = بكسل واحد من الصورة", W / 2, ly + labelH / 2);
+      ctx.fillText("🔍 مكبّرة: كل رقم هنا = بكسل واحد من الصورة", W / 2, ly + labelH / 2);
 
       const zw = zc * 2 * k2 + 2 * inner, zh = zr * 3 * k2 + 2 * inner;
       const zx = Math.round((W - zw) / 2), zy = ly + labelH;
@@ -254,6 +317,7 @@
       roundRect(ctx, zx, zy, zw, zh, inner);
       ctx.fill();
       drawGrid(ctx, matrix, zx + inner, zy + inner, k2, r0, c0, zr, zc);
+      drawWatermark(ctx, zx, zy, zw, zh, 0.12, false);
     }
 
     drawBrand(ctx, W, H - footerH - pad * 0.3, footerH);
@@ -275,6 +339,7 @@
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, W, gridH);
     drawGrid(ctx, matrix, margin * 2 * k, margin * 3 * k, k);
+    drawWatermark(ctx, 0, 0, W, gridH);
     ctx.fillStyle = NAVY;
     ctx.fillRect(0, gridH, W, bandH);
     drawBrand(ctx, W, gridH, bandH);
@@ -301,7 +366,7 @@
     if (!matrix) return;
     const status = $("status");
     button.disabled = true;
-    status.textContent = "جارٍ التجهيز…";
+    status.textContent = "بنجهّزها…";
     try {
       await fontsReady;
       if (!logo.complete) await new Promise((r) => { logo.onload = logo.onerror = r; });
@@ -316,10 +381,10 @@
         if (!blob) throw new Error("toBlob failed");
         await deliver(blob, `binary-portrait-${kind}.png`);
       }
-      status.textContent = "تم ✓ شاركها وامنشن حماسة 💛";
+      status.textContent = "تم ✓ شيّرها واعمل منشن لـ حماصه 💛";
     } catch (e) {
       console.error(e);
-      status.textContent = "حصلت مشكلة أثناء التحميل — جرّب دقة أقل.";
+      status.textContent = "حصلت مشكلة وإحنا بنجهّزها — جرّب دقة أقل.";
     } finally {
       button.disabled = false;
     }

@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>صورتك بالـ 0 و 1 — حماسة</title>
-  <meta name="description" content="حوّل صورتك إلى أصفار وآحاد كما يراها الكمبيوتر. مجاني، وصورتك لا تُرفع لأي سيرفر.">
+  <title>حوّل أي صورة لأصفار ووحايد — حماصه</title>
+  <meta name="description" content="حوّل أي صورة لأصفار ووحايد زي ما الكمبيوتر بيشوفها. ببلاش، وصورتك مش بتترفع على أي سيرفر.">
   <meta name="theme-color" content="#111820">
   <link rel="icon" type="image/png" href="assets/favicon.png">
 
   <!-- Share previews (WhatsApp, X, Facebook, Telegram) -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="صورتك بالـ 0 و 1">
-  <meta property="og:description" content="شوف صورتك زي ما الكمبيوتر بيشوفها: 1 = أسود، 0 = أبيض.">
+  <meta property="og:title" content="حوّل أي صورة لأصفار ووحايد 0️⃣1️⃣">
+  <meta property="og:description" content="شوف صورتك زي ما الكمبيوتر بيشوفها: 1 = أسود، 0 = أبيض. من حماصه.">
   <meta property="og:image" content="https://learnwithhamasa.github.io/binary-portrait/assets/og.png">
   <meta property="og:url" content="https://learnwithhamasa.github.io/binary-portrait/">
   <meta name="twitter:card" content="summary_large_image">
@@ -19,14 +19,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
   <header class="top">
-    <img src="assets/logo.png" alt="حماسة" class="logo">
+    <img src="assets/logo.png" alt="حماصه" class="logo">
     <div>
-      <h1>صورتك بالـ <span class="mono accent">0</span> و <span class="mono accent">1</span></h1>
-      <p class="sub">حوّل أي صورة إلى أصفار وآحاد — زي ما الكمبيوتر بيشوفها بالظبط.</p>
+      <h1>حوّل أي صورة <span class="accent">لأصفار ووحايد</span></h1>
+      <p class="sub">شوف صورتك بالـ <span class="mono accent">0</span> و <span class="mono accent">1</span> — زي ما الكمبيوتر بيشوفها بالظبط.</p>
     </div>
   </header>
 
@@ -35,16 +35,16 @@
     <label class="drop" id="drop">
       <input type="file" id="file" accept="image/*" hidden>
       <span class="drop-icon mono">01</span>
-      <strong>اختر صورة أو اسحبها هنا</strong>
-      <small>يُفضّل صورة وجه واضحة بخلفية فاتحة أو شفافة (PNG)</small>
+      <strong>اختار صورة أو اسحبها هنا</strong>
+      <small>الأحسن صورة وش واضحة وخلفيتها فاتحة أو شفافة (PNG)</small>
     </label>
-    <p class="privacy">🔒 صورتك لا تُرفع لأي سيرفر — كل شيء يتم على جهازك.</p>
+    <p class="privacy">🔒 صورتك مش بتترفع على أي سيرفر — كل حاجة بتحصل على جهازك.</p>
 
     <!-- Step 2: workspace (hidden until an image is chosen) -->
     <section id="work" hidden>
       <div class="card preview-card">
         <canvas id="preview" aria-label="معاينة الصورة بالأصفار والآحاد"></canvas>
-        <p class="hint">اضغط على أي مكان في الصورة لتكبيره ورؤية الأرقام 👇</p>
+        <p class="hint">دوس على أي حتة في الصورة عشان تكبّرها وتشوف الأرقام 👇</p>
       </div>
 
       <div class="card zoom-card">
@@ -60,7 +60,7 @@
         <div class="control">
           <span class="label">الطريقة</span>
           <div class="seg" role="radiogroup">
-            <button type="button" class="on" data-mode="dither" role="radio" aria-checked="true">تفاصيل أكثر (Dithering)</button>
+            <button type="button" class="on" data-mode="dither" role="radio" aria-checked="true">تفاصيل أكتر (Dithering)</button>
             <button type="button" data-mode="threshold" role="radio" aria-checked="false">أبيض وأسود صريح</button>
           </div>
         </div>
@@ -73,14 +73,14 @@
           <input type="range" id="contrast" min="0.6" max="2" step="0.05" value="1.15">
         </div>
         <div class="row">
-          <label class="check"><input type="checkbox" id="invert"> عكس الألوان</label>
-          <button type="button" class="link" id="reset">إعادة الضبط</button>
-          <button type="button" class="link" id="another">صورة أخرى</button>
+          <label class="check"><input type="checkbox" id="invert"> اعكس الألوان</label>
+          <button type="button" class="link" id="reset">رجّع الإعدادات</button>
+          <button type="button" class="link" id="another">صورة تانية</button>
         </div>
       </div>
 
       <div class="card downloads">
-        <h2>تحميل</h2>
+        <h2>نزّلها</h2>
         <div class="btns">
           <button type="button" class="btn primary" data-export="story">📱 للريلز والستوري 9:16</button>
           <button type="button" class="btn" data-export="square">⬛ مربع للبوست 1:1</button>
@@ -95,21 +95,22 @@
     <section class="card how">
       <h2>إزاي الكمبيوتر بيشوف الصورة؟</h2>
       <ol>
-        <li>بنحوّل الصورة للرمادي.</li>
-        <li>بنقسمها لشبكة؛ <b>كل خانة = بكسل واحد</b>.</li>
+        <li>بنحوّل الصورة لرمادي.</li>
+        <li>بنقسّمها لشبكة؛ <b>كل خانة = بكسل واحد</b>.</li>
         <li>كل بكسل يبقى <b class="mono">1</b> لو أسود أو <b class="mono">0</b> لو أبيض — يعني <b>1 بت</b> لكل بكسل.</li>
       </ol>
-      <p class="note">ده تبسيط تعليمي (صورة 1-بت). الصور الحقيقية بتستخدم عادةً 8 بت لكل بكسل في الرمادي (256 درجة) و24 بت في الألوان (أحمر وأخضر وأزرق).</p>
+      <p class="note">ده تبسيط تعليمي (صورة 1-بت). الصور الحقيقية غالبًا بتستخدم 8 بت لكل بكسل في الرمادي (256 درجة) و24 بت في الألوان (أحمر وأخضر وأزرق).</p>
     </section>
   </main>
 
   <footer>
     <img src="assets/logo.png" alt="" class="logo sm">
-    <span>صُنع بواسطة <b>حماسة</b> · مجاني ومفتوح المصدر</span>
+    <span>معمولة بحب من <b>حماصه</b> · ببلاش ومفتوحة المصدر</span>
+    <a href="https://learnwithhamasa.github.io/binary-portrait/" class="mono site" dir="ltr">learnwithhamasa.github.io/binary-portrait</a>
     <a href="https://github.com/learnwithhamasa/binary-portrait" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
-  <script src="js/core.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/core.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
 </body>
 </html>
