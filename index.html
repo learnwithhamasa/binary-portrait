@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>صورتك بالـ 0 و 1 — حماسة</title>
+  <meta name="description" content="حوّل صورتك إلى أصفار وآحاد كما يراها الكمبيوتر. مجاني، وصورتك لا تُرفع لأي سيرفر.">
+  <meta name="theme-color" content="#111820">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <!-- Share previews (WhatsApp, X, Facebook, Telegram) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="صورتك بالـ 0 و 1">
+  <meta property="og:description" content="شوف صورتك زي ما الكمبيوتر بيشوفها: 1 = أسود، 0 = أبيض.">
+  <meta property="og:image" content="https://stap20.github.io/binary-portrait/assets/og.png">
+  <meta property="og:url" content="https://stap20.github.io/binary-portrait/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <img src="assets/logo.png" alt="حماسة" class="logo">
+    <div>
+      <h1>صورتك بالـ <span class="mono accent">0</span> و <span class="mono accent">1</span></h1>
+      <p class="sub">حوّل أي صورة إلى أصفار وآحاد — زي ما الكمبيوتر بيشوفها بالظبط.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- Step 1: pick an image -->
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept="image/*" hidden>
+      <span class="drop-icon mono">01</span>
+      <strong>اختر صورة أو اسحبها هنا</strong>
+      <small>يُفضّل صورة وجه واضحة بخلفية فاتحة أو شفافة (PNG)</small>
+    </label>
+    <p class="privacy">🔒 صورتك لا تُرفع لأي سيرفر — كل شيء يتم على جهازك.</p>
+
+    <!-- Step 2: workspace (hidden until an image is chosen) -->
+    <section id="work" hidden>
+      <div class="card preview-card">
+        <canvas id="preview" aria-label="معاينة الصورة بالأصفار والآحاد"></canvas>
+        <p class="hint">اضغط على أي مكان في الصورة لتكبيره ورؤية الأرقام 👇</p>
+      </div>
+
+      <div class="card zoom-card">
+        <canvas id="zoom" aria-label="تكبير الأرقام"></canvas>
+        <p class="legend"><span class="mono one">1</span> = أسود &nbsp;·&nbsp; <span class="mono zero">0</span> = أبيض &nbsp;·&nbsp; كل خانة = بكسل واحد</p>
+      </div>
+
+      <div class="card controls">
+        <div class="control">
+          <label for="cols">الدقة <output id="colsOut">140</output> عمود</label>
+          <input type="range" id="cols" min="60" max="240" step="10" value="140">
+        </div>
+        <div class="control">
+          <span class="label">الطريقة</span>
+          <div class="seg" role="radiogroup">
+            <button type="button" class="on" data-mode="dither" role="radio" aria-checked="true">تفاصيل أكثر (Dithering)</button>
+            <button type="button" data-mode="threshold" role="radio" aria-checked="false">أبيض وأسود صريح</button>
+          </div>
+        </div>
+        <div class="control">
+          <label for="bright">الإضاءة</label>
+          <input type="range" id="bright" min="-50" max="50" step="1" value="0">
+        </div>
+        <div class="control">
+          <label for="contrast">التباين</label>
+          <input type="range" id="contrast" min="0.6" max="2" step="0.05" value="1.15">
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="invert"> عكس الألوان</label>
+          <button type="button" class="link" id="reset">إعادة الضبط</button>
+          <button type="button" class="link" id="another">صورة أخرى</button>
+        </div>
+      </div>
+
+      <div class="card downloads">
+        <h2>تحميل</h2>
+        <div class="btns">
+          <button type="button" class="btn primary" data-export="story">📱 للريلز والستوري 9:16</button>
+          <button type="button" class="btn" data-export="square">⬛ مربع للبوست 1:1</button>
+          <button type="button" class="btn" data-export="full">🖼️ الصورة كاملة 4K</button>
+          <button type="button" class="btn" data-export="txt">📄 المصفوفة (TXT)</button>
+        </div>
+        <p class="status" id="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="card how">
+      <h2>إزاي الكمبيوتر بيشوف الصورة؟</h2>
+      <ol>
+        <li>بنحوّل الصورة للرمادي.</li>
+        <li>بنقسمها لشبكة؛ <b>كل خانة = بكسل واحد</b>.</li>
+        <li>كل بكسل يبقى <b class="mono">1</b> لو أسود أو <b class="mono">0</b> لو أبيض — يعني <b>1 بت</b> لكل بكسل.</li>
+      </ol>
+      <p class="note">ده تبسيط تعليمي (صورة 1-بت). الصور الحقيقية بتستخدم عادةً 8 بت لكل بكسل في الرمادي (256 درجة) و24 بت في الألوان (أحمر وأخضر وأزرق).</p>
+    </section>
+  </main>
+
+  <footer>
+    <img src="assets/logo.png" alt="" class="logo sm">
+    <span>صُنع بواسطة <b>حماسة</b> · مجاني ومفتوح المصدر</span>
+    <a href="https://github.com/stap20/binary-portrait" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="js/core.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
