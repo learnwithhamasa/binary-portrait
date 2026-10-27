@@ -4,7 +4,7 @@
   const C = window.BinaryCore;
   const $ = (id) => document.getElementById(id);
 
-  const SITE_URL = "stap20.github.io/binary-portrait";
+  const SITE_URL = "learnwithhamasa.github.io/binary-portrait";
   const MAX_SOURCE = 1200;          // working resolution (longest side)
   const CELL_ASPECT = 1.5;          // cell = 2k wide x 3k tall
   const MAX_CANVAS_AREA = 16e6;     // stay under mobile Safari's canvas limit

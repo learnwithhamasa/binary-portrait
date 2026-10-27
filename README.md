@@ -1,6 +1,6 @@
 # صورتك بالـ 0 و 1 — Binary Portrait
 
-**جرّبها:** https://stap20.github.io/binary-portrait/
+**جرّبها:** https://learnwithhamasa.github.io/binary-portrait/
 
 حوّل أي صورة إلى أصفار وآحاد كما يراها الكمبيوتر:
 **1 = أسود · 0 = أبيض · كل خانة = بكسل واحد** (صورة 1-بت).
