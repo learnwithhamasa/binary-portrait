@@ -18,8 +18,8 @@
   let zoomCenter = { x: 0.5, y: 0.33 };   // fraction of the image
   let pending = false;
 
-  const logo = new Image();
-  logo.src = "assets/logo.png";
+  const mark = new Image();          // logo mark only, single brand color, transparent background
+  mark.src = "assets/mark.png";
   const fontsReady = Promise.all([
     document.fonts.load('800 40px "JetBrains Mono"'),
     document.fonts.load('400 40px "JetBrains Mono"'),
@@ -85,12 +85,12 @@
 
   // ---------------------------------------------------------------- watermark
   /**
-   * Watermark baked into the pixels of the art itself: diagonal rows of logo + "حماصه"
-   * tiled over the whole area (cropping can't remove it) and a solid logo stamp in the middle-bottom.
+   * Watermark baked into the pixels of the art itself: diagonal rows of the amber logo mark + a small
+   * "حماصه" tiled over the whole area (cropping can't remove it), and one larger mark near the bottom.
    * scale = text height as a fraction of the area's shorter side.
    */
-  function drawWatermark(ctx, x, y, w, h, scale = 0.05, stamp = true) {
-    const fs = Math.max(9, Math.round(Math.min(w, h) * scale));
+  function drawWatermark(ctx, x, y, w, h, scale = 0.032, stamp = true) {
+    const fs = Math.max(8, Math.round(Math.min(w, h) * scale));
     const R = Math.hypot(w, h) / 2;
     ctx.save();
     ctx.beginPath();
@@ -103,42 +103,27 @@
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     const label = "حماصه";
-    const ls = fs * 1.15;                                   // logo size in each tile
-    const tw = ls + fs * 0.35 + ctx.measureText(label).width + fs * 2.6;
-    const lh = fs * 3.4;
-    ctx.globalAlpha = 0.26;
+    const ls = fs * 1.6;                                    // mark size in each tile
+    const tw = ls + fs * 0.4 + ctx.measureText(label).width + fs * 4;
+    const lh = fs * 4.6;
+    ctx.globalAlpha = 0.3;
     ctx.fillStyle = AMBER;
     for (let row = 0, yy = -R; yy <= R + lh; yy += lh, row++) {
       for (let xx = -R - (row % 2) * tw / 2; xx <= R; xx += tw) {
-        ctx.drawImage(logo, xx, yy - ls / 2, ls, ls);
-        ctx.fillText(label, xx + ls + fs * 0.35, yy);
+        ctx.drawImage(mark, xx, yy - ls / 2, ls, ls);
+        ctx.fillText(label, xx + ls + fs * 0.4, yy);
       }
     }
     ctx.restore();
     if (!stamp) return;
 
-    // Solid stamp: logo + name, centered near the bottom of the art
-    const s = Math.round(Math.min(w, h) * 0.13);
+    // One stronger mark, centered near the bottom of the art (white glow keeps it readable on black "1"s)
+    const s = Math.round(Math.min(w, h) * 0.1);
     ctx.save();
-    ctx.font = `800 ${Math.round(s * 0.42)}px "Cairo", sans-serif`;
-    ctx.direction = "rtl";
-    const nameW = ctx.measureText(label).width;
-    const pw = s + s * 0.25 + nameW + s * 0.45, ph = s + s * 0.3;
-    const px = x + (w - pw) / 2, py = y + h - ph - h * 0.04;
-    ctx.globalAlpha = 0.88;
-    ctx.fillStyle = NAVY;
-    roundRect(ctx, px, py, pw, ph, ph / 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.save();
-    roundRect(ctx, px + s * 0.15, py + s * 0.15, s, s, s * 0.22);
-    ctx.clip();
-    ctx.drawImage(logo, px + s * 0.15, py + s * 0.15, s, s);
-    ctx.restore();
-    ctx.fillStyle = "#fff";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    ctx.fillText(label, px + s * 0.15 + s + s * 0.25, py + ph / 2 + s * 0.03);
+    ctx.shadowColor = "rgba(255,255,255,0.95)";
+    ctx.shadowBlur = s * 0.12;
+    ctx.globalAlpha = 0.92;
+    ctx.drawImage(mark, x + (w - s) / 2, y + h - s - h * 0.04, s, s);
     ctx.restore();
   }
 
@@ -186,7 +171,7 @@
     cv.height = zr * 3 * k;
     const ctx = cv.getContext("2d");
     drawGrid(ctx, matrix, 0, 0, k, r0, c0, zr, zc);
-    drawWatermark(ctx, 0, 0, cv.width, cv.height, 0.16, false);
+    drawWatermark(ctx, 0, 0, cv.width, cv.height, 0.1, false);
   }
 
   // ---------------------------------------------------------------- loading
@@ -235,11 +220,7 @@
     const gap = size * 0.3;
     const x = (W - (size + gap + textW)) / 2;
     const cy = y + bandH / 2;
-    ctx.save();
-    roundRect(ctx, x, cy - size / 2, size, size, size * 0.2);
-    ctx.clip();
-    ctx.drawImage(logo, x, cy - size / 2, size, size);
-    ctx.restore();
+    ctx.drawImage(mark, x, cy - size / 2, size, size);
     ctx.fillStyle = "#c9d2db";
     ctx.textAlign = "left";
     ctx.direction = "ltr";
@@ -317,7 +298,7 @@
       roundRect(ctx, zx, zy, zw, zh, inner);
       ctx.fill();
       drawGrid(ctx, matrix, zx + inner, zy + inner, k2, r0, c0, zr, zc);
-      drawWatermark(ctx, zx, zy, zw, zh, 0.12, false);
+      drawWatermark(ctx, zx, zy, zw, zh, 0.08, false);
     }
 
     drawBrand(ctx, W, H - footerH - pad * 0.3, footerH);
@@ -369,7 +350,7 @@
     status.textContent = "بنجهّزها…";
     try {
       await fontsReady;
-      if (!logo.complete) await new Promise((r) => { logo.onload = logo.onerror = r; });
+      if (!mark.complete) await new Promise((r) => { mark.onload = mark.onerror = r; });
       await new Promise((r) => setTimeout(r, 30));   // let the status paint first
       if (kind === "txt") {
         await deliver(new Blob([C.matrixToTxt(matrix)], { type: "text/plain" }), "binary_matrix.txt");

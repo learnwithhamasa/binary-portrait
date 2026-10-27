@@ -103,7 +103,6 @@ footer {
 }
 footer a { color: var(--amber); }
 
-footer .site { direction: ltr; unicode-bidi: isolate; font-size: clamp(.68rem, 3.3vw, .9rem); white-space: nowrap; }
 html { -webkit-text-size-adjust: 100%; }
 img, canvas { max-width: 100%; }
 .top > div { min-width: 0; }
