@@ -19,3 +19,16 @@ Note: this is a simplified educational encoding (1 bit per pixel). Real grayscal
 typically use 8 bits per pixel and color images 24 bits.
 
 Made by **حماصه (Hamasa)**.
+
+## Project structure
+
+```
+index.html, style.css     the website (served by GitHub Pages)
+js/core.js                image → 0/1 matrix (pure functions, also runs in Node)
+js/app.js                 UI, preview, watermark, exports
+assets/                   logo, watermark marks, favicon, share image
+python/binary_image.py    offline generator for the reel (4K images + TXT matrix)
+```
+
+Python: `python -m pip install opencv-python pillow numpy`, then
+`python python/binary_image.py --input photo.png` (results go to `binary_output/` next to the photo).
